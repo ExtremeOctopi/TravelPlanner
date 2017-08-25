@@ -50,6 +50,7 @@ class App extends React.Component {
       budget: '$',
       exchange: {},
       max: 0,
+      flightTime: true,
       hotelRating: true,
       hotelPrice: 1,
       foodRating: true,
@@ -121,8 +122,6 @@ class App extends React.Component {
       };
       this.state.savedChoices[0].hotel = saved;
     }
-
-    console.log(this.state.savedChoices);
   }
 
   changeBudget(e) {
@@ -515,6 +514,32 @@ class App extends React.Component {
     })
   }
 
+  sortFlightByTime() {
+    if ( this.state.flights ) {
+      this.setState( {
+        flights: this.state.flights.sort( ( a, b ) => {
+          var aTime = ( new Date( a.slice[0].segment[0].leg[0].departureTime ) ).getTime();
+          var bTime = ( new Date( b.slice[0].segment[0].leg[0].departureTime ) ).getTime();
+
+          if ( this.state.flightTime ) {
+            return aTime < bTime;
+          } else {
+            return bTime < aTime;
+          }
+        } ),
+        flightTime: !this.state.flightTime
+      } );
+    }
+  }
+
+  sortFlightByPrice() {
+    if ( this.state.flights ) {
+      this.setState( {
+        flights: this.state.flights.reverse()
+      } );
+    }
+  }
+
   sortHotelByRating() {
     this.setState( { hotelRating: !this.state.hotelRating }, () => {
       this.searchHotel();
@@ -560,7 +585,10 @@ class App extends React.Component {
           <table className='table'>
             <thead>
             <tr>
-              <th>Flights</th>
+              <th>Flights
+                <button onClick={ this.sortFlightByTime.bind( this ) } className='glyphicon glyphicon-time' style={ { float: 'right' } }></button>
+                <button onClick={ this.sortFlightByPrice.bind( this ) } className='glyphicon glyphicon-usd' style={ { float: 'right' } }></button>
+              </th>
               <th>Lodging
                 <button onClick={ this.sortHotelByRating.bind( this ) } className='glyphicon glyphicon-star' style={ { float: 'right' } }></button>
                 <span className="dropdown">
@@ -616,6 +644,5 @@ class App extends React.Component {
     )
   }
 }
-
 
 ReactDOM.render(<App />, document.getElementById('app'));
