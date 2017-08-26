@@ -20,9 +20,9 @@ module.exports.init = function(passport) {
   });
 
   passport.use(new FacebookStrategy({  
-    clientID: configAuth.facebookAuth.clientID,
-    clientSecret: configAuth.facebookAuth.clientSecret,
-    callbackURL: configAuth.facebookAuth.callbackURL,
+    clientID: process.env.CLIENT_ID || configAuth.facebookAuth.clientID,
+    clientSecret: process.env.CLIENT_SECRET || configAuth.facebookAuth.clientSecret,
+    callbackURL: process.env.CALLBACK_URL || configAuth.facebookAuth.callbackURL,
     profileFields: ['id', 'email', 'first_name', 'last_name'],
     enableProof: true
   },
