@@ -73,8 +73,7 @@ var findUser = function(id, cb) {
 };
 
 var saveToDatabase = function(data,callback) {
-  console.log('data.....................', data);
-  Item.find({flights: data.flights, hotel: data.hotel, attractions: data.attractions, food: data.food, cost: data.cost}, (err, result) => {
+  Item.find({flights: data.flights, hotel: data.hotel, attractions: data.attractions, food: data.food, cost: data.cost, userId: data.userId}, (err, result) => {
     if (err) {
       callback(err, null);
     } else {
@@ -86,6 +85,7 @@ var saveToDatabase = function(data,callback) {
          item.food = data.food;
          item.weather = data.weather;
          item.cost = data.cost;
+         item.userId = data.userId;
          item.save(function(err, result) {
            if(err) {
              console.log('error saving to the db ', err);
@@ -111,8 +111,8 @@ var deleteFromDatabase = function(id, callback){
 };
 
 
-var selectAll = function(callback) {
-  Item.find({}, function(err, items) {
+var selectAll = function(userId, callback) {
+  Item.find({userId: userId}, function(err, items) {
     if(err) {
       callback(err, null);
     } else {
