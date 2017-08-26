@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import $ from 'jquery';
 import Hotels from './components/hotels.jsx'
 import Flights from './components/Flights.jsx';
-import config from '../../config.js';
+import config from '../../config/auth.js';
 import SearchBar from './components/SearchBar.jsx';
 import Attraction from './components/Attraction.jsx';
 import FoodList from './components/FoodList.jsx';
@@ -18,6 +18,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      user: '',
       departureLocation: '',
       arrivalLocation: '',
       departureDate: '',
@@ -72,7 +73,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.retrieveFromDatabase();
-
     $.get('http://apilayer.net/api/live?access_key=1413ee013898f6dc75d92fa9f5444d13 ', (res) => {
       this.setState({
         exchange: res.quotes
@@ -417,6 +417,7 @@ class App extends React.Component {
       method: 'post',
       data: {data: JSON.stringify(app.state.savedChoices[0])},
       success: (data) => {
+        console.log(data)
         this.retrieveFromDatabase();
       },
       error: (err) => {

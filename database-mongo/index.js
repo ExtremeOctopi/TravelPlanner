@@ -28,7 +28,49 @@ var itemSchema = mongoose.Schema({
   cost: Number
 });
 
+var userSchema = mongoose.Schema({  
+  facebookid: String,
+  token: String,
+  email: String,
+  firstname: String,
+  lastname: String
+});
+
 var Item = mongoose.model('Item', itemSchema);
+var User = mongoose.model('User', userSchema);
+
+var saveUser = (token, refreshToken, profile, callback) => {
+
+  User.findOne({'facebookid': profile.id}, (err, user) => {
+    if (err) {
+      return err;
+    } 
+    if (user) {
+      return user
+    } else {
+      var newUser = new User();
+      newUser.facebookid = profile.id;
+      newUser.token = token;
+      newUser.firstname = profile.name.givenName;
+      newUser.lastname = profile.name.familyName;
+      newUser.email = profile.emails[0].value
+      newUser.save(err => {
+        if (err) {
+          console.log(err)
+          return err;
+        }
+        console.log('SUCCESS SAVED')
+        return newUser;
+      });
+    }
+  });
+}
+
+var findUser = function(id, cb) {
+  User.findOne({'facebookid': id}, (err, user) => {
+    return cb(err, user);
+  })
+}
 
 var saveToDatabase = function(data,callback) {
   Item.find({flights: data.flights, hotel: data.hotel, attractions: data.attractions, food: data.food, cost: data.cost}, (err, result) => {
@@ -80,5 +122,7 @@ var selectAll = function(callback) {
 };
 
 module.exports.selectAll = selectAll;
-module.exports.saveToDatabase = saveToDatabase;
-module.exports.deleteFromDatabase = deleteFromDatabase;
+module.exports.saveToDatabase =saveToDatabase;
+module.exports.deleteFromDatabase =deleteFromDatabase;
+module.exports.saveUser = saveUser;
+module.exports.findUser = findUser;

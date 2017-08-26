@@ -1,5 +1,5 @@
 const yelp = require('yelp-fusion');
-const yelpConfig = require('../../config.js');
+const yelpConfig = require('../../config/auth.js');
 
 
 var searchAttr = function (searchCity, callback){

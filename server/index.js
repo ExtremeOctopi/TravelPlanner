@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const items = require('../database-mongo');
+const db = require('../database-mongo');
 const request = require('request');
 const app = express();
 const hotel = require('./hotel/hotel');
@@ -8,9 +8,37 @@ const yelpattr = require('./yelpattraction/yelpattraction');
 const yelpfood = require('./yelpfood/yelpfood');
 const weather = require('./weatherAPI/weather.js');
 const geolocation = require('./geolocationAPI/geolocation.js');
+const passport = require('passport');
+const session = require('express-session');
 
 app.use(express.static(__dirname + '/../react-client/dist'));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({secret: 'something', resave: true, saveUninitialized: true }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+require('../config/passport')(passport);
+
+app.get('/getAll', (req, res) => {
+  db.selectAll(function(err, result) {
+    if(err) {
+      console.log('server received database error when retrieving records');
+    } else {
+      res.send(result);
+    }
+  })
+});
+
+app.get('/auth/facebook', passport.authenticate('facebook', {authType: 'rerequest'}, { scope: ['user_friends','email']}));
+
+app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+  successRedirect: '/',
+  failureRedirect: '/',
+}), (req, res) => {
+  console.log('inside facebook server', req.session)
+});
 
 
 app.post('/attraction', function(req,res){
@@ -47,7 +75,7 @@ app.post('/weather', function(req,res) {
 
 app.post('/save', (req, res) => {
   var data = JSON.parse(req.body.data);
-  items.saveToDatabase(data, function(err, result) {
+  db.saveToDatabase(data, function(err, result) {
     if(err) {
       console.log('server received database error when saving a record');
     } else {
@@ -56,25 +84,16 @@ app.post('/save', (req, res) => {
   })
 });
 
+
 app.post('/removeRecord', (req, res) => {
    var id = req.body.uniqueID;
-   items.deleteFromDatabase(id);
+   db.deleteFromDatabase(id);
    res.sendStatus(200);
 });
 
-app.get('/getAll', (req, res) => {
-  items.selectAll(function(err, result) {
-    if(err) {
-      console.log('server received database error when retrieving records');
-    } else {
-      console.log(result);
-      res.send(result);
-    }
-  })
-});
-
-
 var port = process.env.PORT || 8080;
+
+
 
 app.listen(port, function() {
   console.log(`listening on port ${port}`);

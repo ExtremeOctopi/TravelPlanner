@@ -1,4 +1,4 @@
-const yelpConfig = require( '../../config.js' );
+const yelpConfig = require('../../config/auth.js');
 const yelp = require( 'yelp-fusion' );
 
 var searchFood = function( location, rating, price, callback ){
