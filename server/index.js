@@ -19,17 +19,18 @@ app.use(session({secret: 'something', resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-passportConfig.init(passport);
+app.use(passportConfig.init);
 
 app.get('/getAll', (req, res) => {
-  db.selectAll(function(err, result) {
-    if(err) {
-      console.log('server received database error when retrieving records');
-    } else {
-      res.send(result);
-    }
-  })
+  if ( req.session.passport && req.session.passport.user ) {
+    db.selectAll(req.session.passport.user, function(err, result) {
+      if(err) {
+        console.log('server received database error when retrieving records');
+      } else {
+        res.send(result);
+      }
+    })
+  }
 });
 
 app.get('/auth/facebook', passport.authenticate('facebook', {authType: 'rerequest'}, { scope: ['user_friends','email']}));
@@ -40,7 +41,6 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 }), (req, res) => {
   console.log('inside facebook server', req.session)
 });
-
 
 app.post('/attraction', function(req,res){
   const attrLocation = req.body.location;
@@ -74,19 +74,21 @@ app.post('/weather', function(req,res) {
   });
 });
 
-app.post('/save', (req, res) => {
-  var data = JSON.parse(req.body.data);
-  console.log('session..................................................\n', passportConfig.getId);
-  console.log('body..................................................\n', req.body);
-  db.saveToDatabase(data, function(err, result) {
-    if(err) {
-      console.log('server received database error when saving a record');
-    } else {
-      res.sendStatus(200);
-    }
-  })
-});
+app.post('/save', ( req, res) => {
+  if ( req.session.passport && req.session.passport.user ) {
+    var data = JSON.parse(req.body.data);
 
+    data.userId = req.session.passport.user;
+
+    db.saveToDatabase(data, function(err, result) {
+      if(err) {
+        console.log('server received database error when saving a record');
+      } else {
+        res.sendStatus(200);
+      }
+    })
+  }
+});
 
 app.post('/removeRecord', (req, res) => {
    var id = req.body.uniqueID;
