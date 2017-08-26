@@ -4,14 +4,16 @@ var configAuth = require('./auth');
 var db = require('../database-mongo');
 
 
-module.exports = function(passport) {  
+var facebookId = 0;
+
+module.exports.init = function(passport) {
 
   passport.serializeUser(function(user, done) {
-    console.log('is this working')
+    console.log('is this working');
     done(null, user.id);
   });
   passport.deserializeUser(function(id, done) {
-    console.log('this is not working correctly', id)
+    console.log('this is not working correctly', id);
     db.findUser(id, function(err, user) {
       done(err, user);
     });
@@ -26,15 +28,16 @@ module.exports = function(passport) {
   },
 
   function(token, refreshToken, profile, done) {
+    console.log('profile', profile);
+    facebookId = profile.id;
     process.nextTick(function() {
       db.saveUser(token, refreshToken, profile, function(data) {
-        return done(null, data)
+        return done(null, data);
         next();
       });
       return done(null, profile)
     });
-
   }));
-
-
 };
+
+module.exports.getId = facebookId;

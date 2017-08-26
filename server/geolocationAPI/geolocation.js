@@ -8,6 +8,6 @@ var requestGeolocation = function(location, callback) {
   request(geoUrl, function (error, response, body) {
      callback(JSON.parse(body));
   });
-}
+};
 
 module.exports.requestGeolocation = requestGeolocation;

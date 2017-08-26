@@ -10,6 +10,7 @@ const weather = require('./weatherAPI/weather.js');
 const geolocation = require('./geolocationAPI/geolocation.js');
 const passport = require('passport');
 const session = require('express-session');
+const passportConfig = require('../config/passport')
 
 app.use(express.static(__dirname + '/../react-client/dist'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,7 +20,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-require('../config/passport')(passport);
+passportConfig.init(passport);
 
 app.get('/getAll', (req, res) => {
   db.selectAll(function(err, result) {
@@ -75,6 +76,8 @@ app.post('/weather', function(req,res) {
 
 app.post('/save', (req, res) => {
   var data = JSON.parse(req.body.data);
+  console.log('session..................................................\n', passportConfig.getId);
+  console.log('body..................................................\n', req.body);
   db.saveToDatabase(data, function(err, result) {
     if(err) {
       console.log('server received database error when saving a record');

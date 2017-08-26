@@ -606,8 +606,9 @@ class App extends React.Component {
             <thead>
             <tr>
               <th>Flights
-                <button onClick={ this.sortFlightByTime.bind( this ) } className='glyphicon glyphicon-time' style={ { float: 'right' } }></button>
-                <button onClick={ this.sortFlightByPrice.bind( this ) } className='glyphicon glyphicon-usd' style={ { float: 'right' } }></button>
+                <button onClick={ this.sortFlightByTime.bind( this ) } className='glyphicon glyphicon-time' style={ { float: 'right' } }/>
+                <button onClick={ this.sortFlightByPrice.bind( this ) } className='glyphicon glyphicon-usd' style={ { float: 'right' } }/>
+                <div className="glyphicon glyphicon-sort-by-attributes-alt" style={ { float: 'right' } }>  </div>
               </th>
               <th>Lodging
                 <button onClick={ this.sortHotelByRating.bind( this ) } className='glyphicon glyphicon-star' style={ { float: 'right' } }></button>
@@ -620,6 +621,7 @@ class App extends React.Component {
                     <li><a onClick={ this.sortHotelByPrice.bind( this ) }>$$$$</a></li>
                   </ul>
                 </span>
+                <div className="glyphicon glyphicon-sort-by-attributes-alt" style={ { float: 'right' } }>  </div>
               </th>
               <th>Attractions</th>
               <th>Restaurants
@@ -633,6 +635,7 @@ class App extends React.Component {
                     <li><a onClick={ this.sortFoodByPrice.bind( this ) }>$$$$</a></li>
                   </ul>
                 </span>
+                <div className="glyphicon glyphicon-sort-by-attributes-alt" style={ { float: 'right' }}>  </div>
               </th>
               <th>Saved</th>
             </tr>

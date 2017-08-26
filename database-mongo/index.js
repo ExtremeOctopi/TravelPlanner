@@ -25,7 +25,8 @@ var itemSchema = mongoose.Schema({
   attractions: Array,
   food: Array,
   weather: Object,
-  cost: Number
+  cost: Number,
+  userId: String
 });
 
 var userSchema = mongoose.Schema({  
@@ -53,26 +54,26 @@ var saveUser = (token, refreshToken, profile, callback) => {
       newUser.token = token;
       newUser.firstname = profile.name.givenName;
       newUser.lastname = profile.name.familyName;
-      newUser.email = profile.emails[0].value
       newUser.save(err => {
         if (err) {
-          console.log(err)
+          console.log(err);
           return err;
         }
-        console.log('SUCCESS SAVED')
+        console.log('SUCCESS SAVED');
         return newUser;
       });
     }
   });
-}
+};
 
 var findUser = function(id, cb) {
   User.findOne({'facebookid': id}, (err, user) => {
     return cb(err, user);
   })
-}
+};
 
 var saveToDatabase = function(data,callback) {
+  console.log('data.....................', data);
   Item.find({flights: data.flights, hotel: data.hotel, attractions: data.attractions, food: data.food, cost: data.cost}, (err, result) => {
     if (err) {
       callback(err, null);
@@ -115,7 +116,6 @@ var selectAll = function(callback) {
     if(err) {
       callback(err, null);
     } else {
-      console.log(items);
       callback(null, items);
     }
   });
